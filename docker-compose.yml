@@ -1,0 +1,17 @@
+version: '3.7'
+
+services:
+  clickhouse:
+    image: clickhouse/clickhouse-server:latest
+    container_name: clickhouse
+    ports:
+      - "8123:8123" # HTTP interface
+      - "9000:9000" # Native client
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - clickhouse-config:/etc/clickhouse-server
+    restart: unless-stopped
+
+volumes:
+  clickhouse-data:
+  clickhouse-config:
