@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: 3.21-clickhouse-amd64
+name: 25.1-clickhouse-amd64
 
 trigger:
   branch:
@@ -23,8 +23,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo:
-        from_secret: docker_repo_alpine
+      repo: kernel528/clickhouse
       tags:
         - latest
         - '25.1'
@@ -70,8 +69,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo:
-        from_secret: docker_repo_alpine
+      repo: kernel528/clickhouse
       tags:
         - ${DRONE_TAG}
 
