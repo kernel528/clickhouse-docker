@@ -1,0 +1,100 @@
+kind: pipeline
+type: docker
+name: 3.21-clickhouse-amd64
+
+trigger:
+  branch:
+    - '25.1.3'
+  event:
+    - pull_request
+
+# Build the docker image for amd64 architecture
+steps:
+  - name: amd64-image-build
+    image: plugins/docker
+    environment:
+      DOCKER_BUILDKIT: 1
+      DOCKER_REPO:
+        from_secret: docker_repo
+    settings:
+      platforms:
+        - linux/amd64
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo:
+        from_secret: docker_repo_alpine
+      tags:
+        - latest
+        - '25.1'
+        - '25.1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '25.1.3'
+        - '25.1.3-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+
+  # Slack notification
+  - name: slack-notification
+    image: plugins/slack
+    when:
+      status:
+        - failure
+        - success
+    settings:
+      webhook:
+        from_secret: slack_webhook_drone_alerts
+---
+
+kind: pipeline
+type: docker
+name: main-clickhouse-amd64
+
+trigger:
+  event:
+    - push
+    - tag
+  branch:
+    - main
+
+# Build the docker image for the main branch & tagged release
+steps:
+  - name: main-docker-image-build
+    image: plugins/docker
+    environment:
+      DOCKER_REPO:
+        from_secret: docker_repo
+    when:
+      event:
+        - tag
+    settings:
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      repo:
+        from_secret: docker_repo_alpine
+      tags:
+        - ${DRONE_TAG}
+
+  # Test docker image
+  - name: latest-clickhouse-amd64-test
+    image: kernel528/clickhouse:latest # Construct the test image path dynamically
+    when:
+      branch:
+        - main
+      event:
+        - push
+    commands:
+      - uname -a
+      - cat /etc/alpine-release
+      - clickhouse-client --query "SELECT version()"
+
+  # Slack notification
+  - name: slack-notification
+    image: plugins/slack
+    when:
+      status:
+        - failure
+        - success
+    settings:
+      webhook:
+        from_secret: slack_webhook_drone_alerts
