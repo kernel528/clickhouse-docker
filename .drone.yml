@@ -4,7 +4,7 @@ name: 3.21-clickhouse-amd64
 
 trigger:
   branch:
-    - '25.1.3'
+    - '25'
   event:
     - pull_request
 
