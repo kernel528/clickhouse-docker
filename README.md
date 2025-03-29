@@ -12,7 +12,9 @@ This image is intended to standup a vanilla alpine-linux based clickhouse instan
 ``docker build -t kernel528/clickhouse-docker:<version> -f Dockerfile .``
 
 ### Running
-``TBD``
+This is currently focused on deploying into a local `docker swarm` cluster.  This uses the `clickhouse-stack-kernel528.yml` file as the basis.
+- This uses a local NAS hosted volume for persistence.
+- It currently uses a lot of CPU so is not run unless actively testing.
 
 ### Using image:
 To use this image, add this to a downstream image Dockerfile:  
