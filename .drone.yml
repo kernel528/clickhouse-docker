@@ -23,8 +23,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo:
-        from_secret: docker_repo_alpine
+      repo: kernel528/clickhouse
       tags:
         - latest
         - '25.5'
@@ -72,8 +71,7 @@ steps:
         from_secret: docker_username
       password:
         from_secret: docker_password
-      repo:
-        from_secret: docker_repo_alpine
+      repo: kernel528/clickhouse
       tags:
         - ${DRONE_TAG}
 
