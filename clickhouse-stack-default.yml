@@ -3,8 +3,9 @@ version: '3.7'
 services:
   clickhouse:
     image: clickhouse/clickhouse-server:25.1.5.31-alpine
-    user: "1024:100"
     container_name: clickhouse
+    environment:
+      CLICKHOUSE_SKIP_USER_SETUP: 1 # This allows insecure default user
     ports:
       - "8123:8123" # HTTP interface
       - "19000:9000" # Native client
