@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: 3.21-clickhouse-amd64
+name: 3.22-clickhouse-amd64
 
 trigger:
   branch:
