@@ -86,7 +86,8 @@ steps:
     commands:
       - uname -a
       - cat /etc/alpine-release
-      - clickhouse-client --query "SELECT version()"
+      - clickhouse-server --version
+      #- clickhouse-client --query "SELECT version()"
 
   # Slack notification
   - name: slack-notification
