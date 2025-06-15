@@ -4,6 +4,8 @@
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/kernel528/clickhouse?sort=semver)](https://hub.docker.com/r/kernel528/clickhouse)
 
 # Source repo for: kernel528:/clickhouse-docker Docker image
+* Based on upstream github:  https://github.com/ClickHouse/ClickHouse/tree/master/docker/server
+* Based on upstream hub.docker.io:  https://hub.docker.com/r/clickhouse/clickhouse-server
 
 ### Overview
 This image is intended to standup a vanilla alpine-linux based clickhouse instance running in docker.
