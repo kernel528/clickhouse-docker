@@ -10,6 +10,12 @@
 ### Overview
 This image is intended to standup a vanilla alpine-linux based clickhouse instance running in docker.
 
+### Base Image Prep Steps
+- Use the upstream `Dockerfile.alpine` as base Dockerfile.
+- Update the local `Dockerfile` with latest clickhouse version.
+- Update the `.drone.yml` version info.
+- Confirm `entrypoint.sh` is up-to-date.  
+
 ### How to Build
 ``docker build -t kernel528/clickhouse-docker:<version> -f Dockerfile .``
 
