@@ -15,6 +15,7 @@ This image is intended to standup a vanilla alpine-linux based clickhouse instan
 - Update the local `Dockerfile` with latest clickhouse version.
 - Update the `.drone.yml` version info.
 - Confirm `entrypoint.sh` is up-to-date.  
+- Update `clickhouse-stack-kernel528.yml` to latest version.
 
 ### How to Build
 ``docker build -t kernel528/clickhouse-docker:<version> -f Dockerfile .``
