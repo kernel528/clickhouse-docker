@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   clickhouse:
-    image: kernel528/clickhouse-server:25.5.2.47
+    image: kernel528/clickhouse-server:25.6.5.41
     user: "1024:100"
     container_name: clickhouse
     environment:
