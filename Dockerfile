@@ -48,8 +48,8 @@ ARG DIRECT_DOWNLOAD_URLS=""
 # We do that in advance at the begining of Dockerfile before any packages will be
 # installed to prevent picking those uid / gid by some unrelated software.
 # The same uid / gid (101) is used both for alpine and ubuntu.
-ARG DEFAULT_UID="101"
-ARG DEFAULT_GID="101"
+ARG DEFAULT_UID="110"
+ARG DEFAULT_GID="110"
 RUN addgroup -S -g "${DEFAULT_GID}" clickhouse && \
     adduser -S -h "/var/lib/clickhouse" -s /bin/bash -G clickhouse -g "ClickHouse server" -u "${DEFAULT_UID}" clickhouse
 

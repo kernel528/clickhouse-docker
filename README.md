@@ -13,6 +13,7 @@ This image is intended to standup a vanilla alpine-linux based clickhouse instan
 ### Base Image Prep Steps
 - Use the upstream `Dockerfile.alpine` as base Dockerfile.
 - Update the local `Dockerfile` with latest clickhouse version.
+  - NOTE: Double-check the UID and GUID used.  I use 110 to avoid some conflicts.
 - Update the `.drone.yml` version info.
 - Confirm `entrypoint.sh` is up-to-date.  
 - Update `clickhouse-stack-kernel528.yml` to latest version.
