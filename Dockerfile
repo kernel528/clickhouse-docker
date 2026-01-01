@@ -12,6 +12,11 @@ RUN arch=${TARGETARCH:-amd64} \
         arm64) ln /lib/linux-gnu/ld-linux-aarch64.so.1 /lib/linux-gnu/ld-2.35.so ;; \
     esac
 
+FROM kernel528/alpine:3.23.2
+
+# Set to root user to install packages
+USER root
+
 ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8 \
