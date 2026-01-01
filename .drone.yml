@@ -1,6 +1,6 @@
 kind: pipeline
 type: docker
-name: 25.11-clickhouse-amd64
+name: 25-clickhouse-amd64
 
 trigger:
   branch:
@@ -26,12 +26,12 @@ steps:
       repo: kernel528/clickhouse
       tags:
         - latest
-        - '25.11'
-        - '25.11-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '25.11.1'
+        - '25.12'
+        - '25.12-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '25.12.1'
         - '25.11.1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '25.11.1.558'
-        - '25.11.1.558-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '25.12.1.649'
+        - '25.12.1.649-drone-build-${DRONE_BUILD_NUMBER}-amd64'
 
   # Slack notification
   - name: slack-notification
