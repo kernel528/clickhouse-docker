@@ -4,7 +4,7 @@
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/kernel528/clickhouse?sort=semver)](https://hub.docker.com/r/kernel528/clickhouse)
 
 # Source repo for: kernel528:/clickhouse-docker Docker image
-* Based on upstream github:  https://github.com/ClickHouse/ClickHouse/tree/master/docker/server
+* Based on upstream github:  https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
 * Based on upstream hub.docker.io:  https://hub.docker.com/r/clickhouse/clickhouse-server
 
 ### Overview
@@ -13,10 +13,11 @@ This image is intended to standup a vanilla alpine-linux based clickhouse instan
 ### Base Image Prep Steps
 - Use the upstream `Dockerfile.alpine` as base Dockerfile.
 - Update the local `Dockerfile` with latest clickhouse version.
-  - NOTE: Double-check the UID and GUID used.  I use 110 to avoid some conflicts.
+  - Double-check the UID and GUID used.  I use 110 to avoid some conflicts.
+- Update the kernel528/alpine:<VERSION> as applicable.
 - Update the `.drone.yml` version info.
 - Confirm `entrypoint.sh` is up-to-date.  
-- Update `clickhouse-stack-kernel528.yml` to latest version.
+- ~~Update `clickhouse-stack-kernel528.yml` to latest version.~~  --> NOTE: This is moved to `docker-swarm` repo.
 
 ### How to Build
 ``docker build -t kernel528/clickhouse-docker:<version> -f Dockerfile .``
