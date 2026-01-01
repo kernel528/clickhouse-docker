@@ -29,7 +29,7 @@ steps:
         - '25.12'
         - '25.12-drone-build-${DRONE_BUILD_NUMBER}-amd64'
         - '25.12.1'
-        - '25.11.1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '25.12.1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
         - '25.12.1.649'
         - '25.12.1.649-drone-build-${DRONE_BUILD_NUMBER}-amd64'
 
