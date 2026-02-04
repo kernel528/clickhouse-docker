@@ -1,43 +1,42 @@
-[![Build Status](http://drone.kernelsanders.biz:8080/api/badges/kernel528/clickhouse-docker/status.svg?ref=refs/heads/main)](http://drone.kernelsanders.biz:8080/kernel528/clickhouse-docker)[![Latest Version](https://img.shields.io/github/v/tag/kernel528/clickhouse-docker)](https://github.com/kernel528/clickhouse-docker/releases/latest)
+[![Build Status](http://drone.kernelsanders.biz:8080/api/badges/kernel528/clickhouse-docker/status.svg?ref=refs/heads/main)](http://drone.kernelsanders.biz:8080/kernel528/clickhouse-docker)
+[![Latest Version](https://img.shields.io/github/v/tag/kernel528/clickhouse-docker)](https://github.com/kernel528/clickhouse-docker/releases/latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kernel528/clickhouse)](https://hub.docker.com/r/kernel528/clickhouse)
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/kernel528/clickhouse)](https://hub.docker.com/r/kernel528/clickhouse/)
 [![Docker Image Version (latest semver)](https://img.shields.io/docker/v/kernel528/clickhouse?sort=semver)](https://hub.docker.com/r/kernel528/clickhouse)
 
-# Source repo for: kernel528:/clickhouse-docker Docker image
-* Based on upstream github:  https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
-* Based on upstream hub.docker.io:  https://hub.docker.com/r/clickhouse/clickhouse-server
+# clickhouse-docker
 
-### Overview
-This image is intended to standup a vanilla alpine-linux based clickhouse instance running in docker.
+Maintainer: kernel528
 
-### Base Image Prep Steps
-- Use the upstream `Dockerfile.alpine` as base Dockerfile.
-- Update the local `Dockerfile` with latest clickhouse version.
-  - Double-check the UID and GUID used.  I use 110 to avoid some conflicts.
-- Update the kernel528/alpine:<VERSION> as applicable.
-- Update the `.drone.yml` version info.
-- Confirm `entrypoint.sh` is up-to-date.  
-- ~~Update `clickhouse-stack-kernel528.yml` to latest version.~~  --> NOTE: This is moved to `docker-swarm` repo.
+## Overview
+This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`, but swaps the base to `kernel528/alpine:3.23.3`. Current package version is `26.1.2.11` (stable channel).
 
-### How to Build
-``docker build -t kernel528/clickhouse-docker:<version> -f Dockerfile .``
+Upstream references:
+- https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
+- https://hub.docker.com/r/clickhouse/clickhouse-server
 
-### Running
-This is currently focused on deploying into a local `docker swarm` cluster.  This uses the `clickhouse-stack-kernel528.yml` file as the basis.
-- This uses a local NAS hosted volume for persistence.
-- It currently uses a lot of CPU so is not run unless actively testing.
+## Project Structure
+- `Dockerfile`: Image build using ClickHouse TGZ packages.
+- `entrypoint.sh`: Startup entrypoint used by the container.
+- `docker_related_config.xml`: Extra config loaded into `config.d/`.
+- `.drone.yml`: CI build/tag configuration.
 
-### Using image:
-To use this image, add this to a downstream image Dockerfile:  
-``FROM kernel528/clickhouse-docker``
+## Build
+```bash
+docker build -t kernel528/clickhouse:26.1.2.11 -f Dockerfile .
+```
 
-### Running
-``$ docker run -it --rm --name clickhouse --hostname docker-clickhouse -e TZ=CST kernel528/clickhouse bash``
+## Run
+```bash
+docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:26.1.2.11
+```
 
-### Using image:
-To use this image, add this to a downstream image Dockerfile:  
-``FROM kernel528/clickhouse:latest``
+## Refresh Workflow
+1) Update `Dockerfile` to the latest upstream version and base image tag.
+2) Verify UID/GID settings (this repo uses `110` to avoid conflicts).
+3) Update `.drone.yml` tags for the new version.
+4) Validate locally or in swarm (`docker-swarm` repo stack).
 
-
-### Authors
-* **kernel528** - (kernel528@gmail.com)
+## Notes
+- Swarm stack definition lives in the `docker-swarm` repo.
+- `CLICKHOUSE_CONFIG` defaults to `/etc/clickhouse-server/config.xml`.
