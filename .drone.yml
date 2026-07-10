@@ -26,12 +26,12 @@ steps:
       repo: kernel528/clickhouse
       tags:
         - latest
-        - '26.1'
-        - '26.1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.1.2'
-        - '26.1.2-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.1.2.11'
-        - '26.1.2.11-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '26.5'
+        - '26.5-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '26.5.5'
+        - '26.5.5-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - '26.5.5.8'
+        - '26.5.5.8-drone-build-${DRONE_BUILD_NUMBER}-amd64'
 
   # Slack notification
   - name: slack-notification
