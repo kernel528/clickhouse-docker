@@ -9,7 +9,7 @@
 Maintainer: kernel528
 
 ## Overview
-This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`, but swaps the base to `kernel528/alpine:3.24.1_1`. Current package version is `26.5.5.8` (stable channel).
+This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`. It uses Ubuntu as a donor stage for glibc artifacts and `kernel528/alpine:3.24.1_1` as the final runtime base. Current package version is `26.5.5.8` (stable channel).
 
 Upstream references:
 - https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
@@ -32,10 +32,16 @@ docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:2
 ```
 
 ## Refresh Workflow
-1) Update `Dockerfile` to the latest upstream version and base image tag.
-2) Verify UID/GID settings (this repo uses `110` to avoid conflicts).
-3) Update `.drone.yml` tags for the new version.
-4) Validate locally or in swarm (`docker-swarm` repo stack).
+1) Review both supply-chain inputs: the Ubuntu donor tag and the published `kernel528/alpine` runtime-base tag.
+2) Update `Dockerfile` to the latest intended ClickHouse version and base tags.
+3) Verify UID/GID settings (this repo uses `110` to avoid conflicts).
+4) Update `.drone.yml` tags for the new version.
+5) Build and smoke-test the image before publishing an immutable release tag.
+6) Update and validate the `docker-swarm` stack only after the release tag resolves.
+
+## Repository Relationships
+
+This independent repository is coordinated by [`docker-workspace`](https://github.com/kernel528/docker-workspace). Its published image is consumed by [`docker-swarm`](https://github.com/kernel528/docker-swarm) in `stacks/clickhouse-stack.yml`. Keep image publication and the persistence-sensitive Swarm rollout as separate reviewed changes.
 
 ## Notes
 - Swarm stack definition lives in the `docker-swarm` repo.
