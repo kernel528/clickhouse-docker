@@ -9,7 +9,7 @@
 Maintainer: kernel528
 
 ## Overview
-This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`, but swaps the base to `kernel528/alpine:3.24.1`. Current package version is `26.5.5.8` (stable channel).
+This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`, but swaps the base to `kernel528/alpine:3.24.1_1`. Current package version is `26.5.5.8` (stable channel).
 
 Upstream references:
 - https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
@@ -23,12 +23,12 @@ Upstream references:
 
 ## Build
 ```bash
-docker build -t kernel528/clickhouse:26.5.5.8 -f Dockerfile .
+docker build -t kernel528/clickhouse:26.5.5.8-3.24.1_1 -f Dockerfile .
 ```
 
 ## Run
 ```bash
-docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:26.5.5.8
+docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:26.5.5.8-3.24.1_1
 ```
 
 ## Refresh Workflow
