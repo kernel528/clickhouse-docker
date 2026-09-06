@@ -25,15 +25,8 @@ steps:
         from_secret: docker_password
       repo: kernel528/clickhouse
       tags:
-        - latest
-        - '26.5'
-        - '26.5-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.5'
-        - '26.5.5-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.5.8'
-        - '26.5.5.8-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.5.8-3.24.1_1'
-        - '26.5.5.8-3.24.1_1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+        - 'pr-${DRONE_PULL_REQUEST}-build-${DRONE_BUILD_NUMBER}-amd64'
+      dry_run: true
 
   # Slack notification
   - name: slack-notification
@@ -53,10 +46,7 @@ name: main-clickhouse-amd64
 
 trigger:
   event:
-    - push
     - tag
-  branch:
-    - main
 
 # Build the docker image for the main branch & tagged release
 steps:
@@ -76,20 +66,6 @@ steps:
       repo: kernel528/clickhouse
       tags:
         - ${DRONE_TAG}
-
-  # Test docker image
-  - name: latest-clickhouse-amd64-test
-    image: kernel528/clickhouse:latest # Construct the test image path dynamically
-    when:
-      branch:
-        - main
-      event:
-        - push
-    commands:
-      - uname -a
-      - cat /etc/alpine-release
-      - clickhouse-server --version
-      #- clickhouse-client --query "SELECT version()"
 
   # Slack notification
   - name: slack-notification
