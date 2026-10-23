@@ -1,4 +1,4 @@
-[![Build Status](http://drone.kernelsanders.biz:8080/api/badges/kernel528/clickhouse-docker/status.svg?ref=refs/heads/main)](http://drone.kernelsanders.biz:8080/kernel528/clickhouse-docker)
+[![Build Status](https://drone.kernelsanders.biz:8443/api/badges/kernel528/clickhouse-docker/status.svg?ref=refs/heads/main)](https://drone.kernelsanders.biz:8443/kernel528/clickhouse-docker)
 [![Latest Version](https://img.shields.io/github/v/tag/kernel528/clickhouse-docker)](https://github.com/kernel528/clickhouse-docker/releases/latest)
 [![Docker Pulls](https://img.shields.io/docker/pulls/kernel528/clickhouse)](https://hub.docker.com/r/kernel528/clickhouse)
 [![Docker Image Size (tag)](https://img.shields.io/docker/image-size/kernel528/clickhouse)](https://hub.docker.com/r/kernel528/clickhouse/)
@@ -9,7 +9,7 @@
 Maintainer: kernel528
 
 ## Overview
-This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`. It uses Ubuntu as a donor stage for glibc artifacts and `kernel528/alpine:3.24.1_1` as the final runtime base. Current package version is `26.5.5.8` (stable channel).
+This repository builds an Alpine-based ClickHouse server image from the upstream `Dockerfile.alpine`. It uses Ubuntu as a donor stage for glibc artifacts and `kernel528/alpine:3.24.3_1` as the final runtime base. Current package version is `26.5.7.64` (stable channel).
 
 Upstream references:
 - https://github.com/ClickHouse/ClickHouse/blob/master/docker/server/Dockerfile.alpine
@@ -23,12 +23,12 @@ Upstream references:
 
 ## Build
 ```bash
-docker build -t kernel528/clickhouse:26.5.5.8-3.24.1_1 -f Dockerfile .
+docker build -t kernel528/clickhouse:26.5.7.64-3.24.3_1 -f Dockerfile .
 ```
 
 ## Run
 ```bash
-docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:26.5.5.8-3.24.1_1
+docker run -d --name clickhouse -p 8123:8123 -p 9000:9000 kernel528/clickhouse:26.5.7.64-3.24.3_1
 ```
 
 ## Refresh Workflow
