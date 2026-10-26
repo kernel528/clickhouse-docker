@@ -1,97 +1,90 @@
 kind: pipeline
 type: docker
-name: 26-clickhouse-amd64
+name: clickhouse-rootless-image-validation
+
+node:
+  ci-role: rootless-image-smoke
+  platform: linux-amd64
 
 trigger:
+  repo:
+    - kernel528/clickhouse-docker
   branch:
     - '26'
+    - main
   event:
     - pull_request
+    - push
+    - custom
 
-# Build the docker image for amd64 architecture
 steps:
-  - name: amd64-image-build
-    image: plugins/docker
+  - name: build-and-smoke
+    image: docker:27-cli
     environment:
-      DOCKER_BUILDKIT: 1
-      DOCKER_REPO:
-        from_secret: docker_repo
-    settings:
-      platforms:
-        - linux/amd64
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: kernel528/clickhouse
-      tags:
-        - latest
-        - '26.5'
-        - '26.5-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.7'
-        - '26.5.7-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.7.64'
-        - '26.5.7.64-drone-build-${DRONE_BUILD_NUMBER}-amd64'
-        - '26.5.7.64-3.24.3_1'
-        - '26.5.7.64-3.24.3_1-drone-build-${DRONE_BUILD_NUMBER}-amd64'
+      DOCKER_HOST: unix:///var/run/docker.sock
+      DOCKER_BUILDKIT: "0"
+    commands:
+      - scripts/ci-rootless-clickhouse-smoke.sh
+    volumes:
+      - name: podman-socket
+        path: /var/run/docker.sock
 
-  # Slack notification
-  - name: slack-notification
-    image: plugins/slack
-    when:
-      status:
-        - failure
-        - success
-    settings:
-      webhook:
-        from_secret: slack_webhook_drone_alerts
+volumes:
+  - name: podman-socket
+    host:
+      path: /run/user/1001/podman/podman.sock
+
 ---
 
 kind: pipeline
 type: docker
-name: main-clickhouse-amd64
+name: clickhouse-maintenance-candidate
 
 trigger:
+  repo:
+    - kernel528/clickhouse-docker
+  branch:
+    - '26'
   event:
     - push
-    - tag
-  branch:
-    - main
 
-# Build the docker image for the main branch & tagged release
-steps:
-  - name: main-docker-image-build
-    image: plugins/docker
+services:
+  - name: docker
+    image: docker:27.5.1-dind
+    privileged: true
     environment:
-      DOCKER_REPO:
-        from_secret: docker_repo
-    when:
-      event:
-        - tag
-    settings:
-      username:
-        from_secret: docker_username
-      password:
-        from_secret: docker_password
-      repo: kernel528/clickhouse
-      tags:
-        - ${DRONE_TAG}
+      DOCKER_TLS_CERTDIR: ""
+    volumes:
+      - name: candidate-dockersock
+        path: /var/run
 
-  # Test docker image
-  - name: latest-clickhouse-amd64-test
-    image: kernel528/clickhouse:latest # Construct the test image path dynamically
-    when:
-      branch:
-        - main
-      event:
-        - push
+steps:
+  - name: build-and-smoke-candidate
+    image: docker:27.5.1-cli
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CLICKHOUSE_IMAGE_REPO: kernel528/clickhouse
+    volumes:
+      - name: candidate-dockersock
+        path: /var/run
     commands:
-      - uname -a
-      - cat /etc/alpine-release
-      - clickhouse-server --version
-      #- clickhouse-client --query "SELECT version()"
+      - scripts/ci-build-clickhouse-candidate.sh
 
-  # Slack notification
+  - name: publish-candidate
+    image: docker:27.5.1-cli
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CLICKHOUSE_IMAGE_REPO: kernel528/clickhouse
+      DOCKER_USERNAME:
+        from_secret: docker_username
+      DOCKER_PASSWORD:
+        from_secret: docker_password
+    volumes:
+      - name: candidate-dockersock
+        path: /var/run
+    commands:
+      - scripts/ci-publish-clickhouse-candidate.sh
+
   - name: slack-notification
     image: plugins/slack
     when:
@@ -101,3 +94,107 @@ steps:
     settings:
       webhook:
         from_secret: slack_webhook_drone_alerts
+
+volumes:
+  - name: candidate-dockersock
+    temp: {}
+
+---
+
+kind: pipeline
+type: docker
+name: main-clickhouse
+
+trigger:
+  repo:
+    - kernel528/clickhouse-docker
+  branch:
+    - main
+  event:
+    - push
+
+steps:
+  - name: slack-notification
+    image: plugins/slack
+    when:
+      status:
+        - failure
+        - success
+    settings:
+      webhook:
+        from_secret: slack_webhook_drone_alerts
+
+---
+
+kind: pipeline
+type: docker
+name: clickhouse-immutable-release
+
+# Release tags are manually created from reviewed main commits.
+trigger:
+  repo:
+    - kernel528/clickhouse-docker
+  event:
+    - tag
+
+services:
+  - name: docker
+    image: docker:27.5.1-dind
+    privileged: true
+    environment:
+      DOCKER_TLS_CERTDIR: ""
+    volumes:
+      - name: release-dockersock
+        path: /var/run
+
+steps:
+  - name: build-and-smoke-release
+    image: docker:27.5.1-cli
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CLICKHOUSE_IMAGE_REPO: kernel528/clickhouse
+    volumes:
+      - name: release-dockersock
+        path: /var/run
+    commands:
+      - scripts/ci-build-clickhouse-release.sh
+
+  - name: check-immutable-tag-unused
+    image: docker:27.5.1-cli
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CLICKHOUSE_IMAGE_REPO: kernel528/clickhouse
+    volumes:
+      - name: release-dockersock
+        path: /var/run
+    commands:
+      - scripts/ci-check-clickhouse-release-tag-unused.sh
+
+  - name: publish-immutable-release
+    image: docker:27.5.1-cli
+    environment:
+      DOCKER_HOST: unix:///var/run/docker.sock
+      CLICKHOUSE_IMAGE_REPO: kernel528/clickhouse
+      DOCKER_USERNAME:
+        from_secret: docker_username
+      DOCKER_PASSWORD:
+        from_secret: docker_password
+    volumes:
+      - name: release-dockersock
+        path: /var/run
+    commands:
+      - scripts/ci-publish-clickhouse-release.sh
+
+  - name: slack-notification
+    image: plugins/slack
+    when:
+      status:
+        - failure
+        - success
+    settings:
+      webhook:
+        from_secret: slack_webhook_drone_alerts
+
+volumes:
+  - name: release-dockersock
+    temp: {}
